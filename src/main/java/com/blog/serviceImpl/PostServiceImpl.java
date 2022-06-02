@@ -1,5 +1,8 @@
 package com.blog.serviceImpl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,16 +33,37 @@ public class PostServiceImpl implements PostService {
 	 */
 	@Override
 	public PostRequestDto createPost(PostRequestDto postRequestDto) {
-		// convert dto to entity
+		Post newlyCreatedPost = postRepository.save(convertDtoToEntity(postRequestDto));
+		
+		PostRequestDto createdPost = convertEntityToDto(newlyCreatedPost);
+		return createdPost;
+	}
+
+	
+
+	@Override
+	public List<PostRequestDto> getAllPost() {
+
+		List<Post> allPosts = postRepository.findAll();
+		/*Java 8 Stream's map method is intermediate operation and consumes 
+		 * single element from input Stream and produces single element to output Stream.
+		 * It simply used to convert Stream of one type to another.
+		 */
+		return allPosts.stream().map(post -> convertEntityToDto(post)).collect(Collectors.toList());
+
+	}
+
+	private Post convertDtoToEntity(PostRequestDto postRequestDto) {
 		Post newPost = new Post();
 		newPost.setId(postRequestDto.getId());
 		newPost.setTitle(postRequestDto.getTitle());
 		newPost.setDescription(postRequestDto.getDescription());
 		newPost.setContent(postRequestDto.getContent());
-		Post newlyCreatedPost = postRepository.save(newPost);
+		return newPost;
+	}
+	
+	private PostRequestDto convertEntityToDto(Post newlyCreatedPost) {
 		PostRequestDto createdPost = new PostRequestDto();
-		
-		//convert entity to dto
 		createdPost.setId(newlyCreatedPost.getId());
 		createdPost.setTitle(newlyCreatedPost.getTitle());
 		createdPost.setDescription(newlyCreatedPost.getDescription());

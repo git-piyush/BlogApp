@@ -1,8 +1,11 @@
 package com.blog.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.blog.DTO.PostRequestDto;
+import com.blog.entity.Post;
 
 /* In an application, the business logic resides within 
  * the service layer so we use the @Service Annotation to 
@@ -13,5 +16,7 @@ import com.blog.DTO.PostRequestDto;
 public interface PostService {
 
 	PostRequestDto createPost(PostRequestDto postRequestDto);
+	
+	List<PostRequestDto> getAllPost();
 	
 }
