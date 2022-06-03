@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,7 @@ import com.blog.service.PostService;
  * @Controller + @ResponseBody
  */
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 public class PostController {
 
 	@Autowired
@@ -40,22 +41,32 @@ public class PostController {
 		 * model you created in your system for handling any specific call. While by
 		 * using @ResponseBody you can send anything back to the place from where the
 		 * request was generated. Both things will be mapped easily without writing any
-		 * custom parser etc.
-		 * // http message converter
-		 * @RequestBody annotation maps the HttpRequest body to a transfer or domain object,
-		 *  enabling automatic deserialization of the inbound HttpRequest body onto a Java object.
+		 * custom parser etc. // http message converter
+		 * 
+		 * @RequestBody annotation maps the HttpRequest body to a transfer or domain
+		 * object, enabling automatic deserialization of the inbound HttpRequest body
+		 * onto a Java object.
 		 */
-		
-		/*ResponseEntity represents the whole HTTP response: status code, headers, and body.
-		 * As a result, we can use it to fully configure the HTTP response.
+
+		/*
+		 * ResponseEntity represents the whole HTTP response: status code, headers, and
+		 * body. As a result, we can use it to fully configure the HTTP response.
 		 */
 		return new ResponseEntity<PostRequestDto>(postService.createPost(postRequestDto), HttpStatus.CREATED);
 
 	}
-	
+
 	@GetMapping
-	public List<PostRequestDto> getAllPost(){
-		return postService.getAllPost();
+	public ResponseEntity<List<PostRequestDto>> getAllPost() {
+		//return postService.getAllPost();
+		return new ResponseEntity<List<PostRequestDto>>(postService.getAllPost(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{postId}")
+	public ResponseEntity<PostRequestDto> getPostByPostId(@PathVariable(name = "postId") Long postId) {
+
+		return new ResponseEntity<PostRequestDto>(postService.getPostByPostId(postId), HttpStatus.OK);
+
 	}
 
 }

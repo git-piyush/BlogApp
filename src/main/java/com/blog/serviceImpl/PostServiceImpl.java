@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.blog.DTO.PostRequestDto;
 import com.blog.entity.Post;
+import com.blog.exception.ResourceNotFoundException;
 import com.blog.repository.PostRepository;
 import com.blog.service.PostService;
 
@@ -34,20 +35,19 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PostRequestDto createPost(PostRequestDto postRequestDto) {
 		Post newlyCreatedPost = postRepository.save(convertDtoToEntity(postRequestDto));
-		
+
 		PostRequestDto createdPost = convertEntityToDto(newlyCreatedPost);
 		return createdPost;
 	}
-
-	
 
 	@Override
 	public List<PostRequestDto> getAllPost() {
 
 		List<Post> allPosts = postRepository.findAll();
-		/*Java 8 Stream's map method is intermediate operation and consumes 
-		 * single element from input Stream and produces single element to output Stream.
-		 * It simply used to convert Stream of one type to another.
+		/*
+		 * Java 8 Stream's map method is intermediate operation and consumes single
+		 * element from input Stream and produces single element to output Stream. It
+		 * simply used to convert Stream of one type to another.
 		 */
 		return allPosts.stream().map(post -> convertEntityToDto(post)).collect(Collectors.toList());
 
@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService {
 		newPost.setContent(postRequestDto.getContent());
 		return newPost;
 	}
-	
+
 	private PostRequestDto convertEntityToDto(Post newlyCreatedPost) {
 		PostRequestDto createdPost = new PostRequestDto();
 		createdPost.setId(newlyCreatedPost.getId());
@@ -69,6 +69,13 @@ public class PostServiceImpl implements PostService {
 		createdPost.setDescription(newlyCreatedPost.getDescription());
 		createdPost.setContent(newlyCreatedPost.getContent());
 		return createdPost;
+	}
+
+	@Override
+	public PostRequestDto getPostByPostId(Long postId) {
+		Post post = postRepository.findById(postId)
+				.orElseThrow(() -> new ResourceNotFoundException("Post", "Id", postId));
+		return convertEntityToDto(post);
 	}
 
 }
