@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.blog.DTO.PostRequestDto;
+import com.blog.DTO.PostResponseDto;
 import com.blog.entity.Post;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.repository.PostRepository;
@@ -36,7 +37,7 @@ public class PostServiceImpl implements PostService {
 	public PostRequestDto createPost(PostRequestDto postRequestDto) {
 		Post newlyCreatedPost = postRepository.save(convertDtoToEntity(postRequestDto));
 
-		PostRequestDto createdPost = convertEntityToDto(newlyCreatedPost);
+		PostRequestDto createdPost = convertEntityToPostRequestDto(newlyCreatedPost);
 		return createdPost;
 	}
 
@@ -49,7 +50,7 @@ public class PostServiceImpl implements PostService {
 		 * element from input Stream and produces single element to output Stream. It
 		 * simply used to convert Stream of one type to another.
 		 */
-		return allPosts.stream().map(post -> convertEntityToDto(post)).collect(Collectors.toList());
+		return allPosts.stream().map(post -> convertEntityToPostRequestDto(post)).collect(Collectors.toList());
 
 	}
 
@@ -62,20 +63,43 @@ public class PostServiceImpl implements PostService {
 		return newPost;
 	}
 
-	private PostRequestDto convertEntityToDto(Post newlyCreatedPost) {
-		PostRequestDto createdPost = new PostRequestDto();
-		createdPost.setId(newlyCreatedPost.getId());
-		createdPost.setTitle(newlyCreatedPost.getTitle());
-		createdPost.setDescription(newlyCreatedPost.getDescription());
-		createdPost.setContent(newlyCreatedPost.getContent());
-		return createdPost;
+	private PostRequestDto convertEntityToPostRequestDto(Post newlyCreatedPost) {
+		PostRequestDto post = new PostRequestDto();
+		post.setId(newlyCreatedPost.getId());
+		post.setTitle(newlyCreatedPost.getTitle());
+		post.setDescription(newlyCreatedPost.getDescription());
+		post.setContent(newlyCreatedPost.getContent());
+		return post;
+	}
+
+	private PostResponseDto convertEntityToPostResponseDto(Post newlyCreatedPost) {
+		PostResponseDto post = new PostResponseDto();
+		post.setId(newlyCreatedPost.getId());
+		post.setTitle(newlyCreatedPost.getTitle());
+		post.setDescription(newlyCreatedPost.getDescription());
+		post.setContent(newlyCreatedPost.getContent());
+		return post;
 	}
 
 	@Override
 	public PostRequestDto getPostByPostId(Long postId) {
 		Post post = postRepository.findById(postId)
 				.orElseThrow(() -> new ResourceNotFoundException("Post", "Id", postId));
-		return convertEntityToDto(post);
+		return convertEntityToPostRequestDto(post);
+	}
+
+	@Override
+	public PostResponseDto updatePost(PostRequestDto postRequestDto, Long postId) {
+
+		Post post = postRepository.findById(postId)
+				.orElseThrow(() -> new ResourceNotFoundException("Post", "Id", postId));
+		
+		post.setTitle(postRequestDto.getTitle());
+		post.setDescription(postRequestDto.getDescription());
+		post.setContent(postRequestDto.getContent());
+		
+		Post updatedPost = postRepository.save(post);
+		return convertEntityToPostResponseDto(updatedPost);
 	}
 
 }
