@@ -63,14 +63,16 @@ public class PostController {
 	@GetMapping
 	public ResponseEntity<PostResponseDto> getAllPost(
 			@RequestParam(name = "pageNo", defaultValue = "0", required = false) int pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "5", required = false) int pageSize) {
+			@RequestParam(name = "pageSize", defaultValue = "5", required = false) int pageSize,
+			@RequestParam(name="sortBy", defaultValue = "id", required = false) String sortBy,
+			@RequestParam(name="orderBy", defaultValue = "ASC", required = false) String orderBy){
 		/*
 		 * The @PathVariable annotation is used for data passed in the URI (e.g. RESTful
 		 * web services) while @RequestParam is used to extract the data found in query
 		 * parameters.
 		 */
 		// return postService.getAllPost();
-		return new ResponseEntity<PostResponseDto>(postService.getAllPost(pageNo, pageSize), HttpStatus.OK);
+		return new ResponseEntity<PostResponseDto>(postService.getAllPost(pageNo, pageSize, sortBy, orderBy), HttpStatus.OK);
 	}
 
 	@GetMapping("/{postId}")
