@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.blog.DTO.PostRequestDto;
 import com.blog.DTO.PostResponseDto;
 import com.blog.service.PostService;
+import com.blog.utils.AppConstants;
 
 /*@RestController is a convenience annotation for creating Restful controllers.
  * This mark controller classes as a request handler to allow Spring to recognize
@@ -62,10 +63,10 @@ public class PostController {
 
 	@GetMapping
 	public ResponseEntity<PostResponseDto> getAllPost(
-			@RequestParam(name = "pageNo", defaultValue = "0", required = false) int pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "5", required = false) int pageSize,
-			@RequestParam(name="sortBy", defaultValue = "id", required = false) String sortBy,
-			@RequestParam(name="orderBy", defaultValue = "ASC", required = false) String orderBy){
+			@RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+			@RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+			@RequestParam(name="sortBy", defaultValue = AppConstants.DEFAULT_SORTBY, required = false) String sortBy,
+			@RequestParam(name="orderBy", defaultValue = AppConstants.DEFAULT_ORDERBY, required = false) String orderBy){
 		/*
 		 * The @PathVariable annotation is used for data passed in the URI (e.g. RESTful
 		 * web services) while @RequestParam is used to extract the data found in query
