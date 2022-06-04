@@ -18,11 +18,11 @@ public interface PostService {
 
 	PostRequestDto createPost(PostRequestDto postRequestDto);
 	
-	List<PostRequestDto> getAllPost();
+	PostResponseDto getAllPost(int pageNo, int pageSize);
 	
 	PostRequestDto getPostByPostId(Long postId);
 	
-	PostResponseDto updatePost(PostRequestDto postRequestDto, Long postId);
+	PostRequestDto updatePost(PostRequestDto postRequestDto, Long postId);
 	
 	String deletePostByPostId(Long postId);
 	

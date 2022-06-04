@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.DTO.PostRequestDto;
@@ -60,9 +61,16 @@ public class PostController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<PostRequestDto>> getAllPost() {
+	public ResponseEntity<PostResponseDto> getAllPost(
+			@RequestParam(name = "pageNo", defaultValue = "0", required = false) int pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "5", required = false) int pageSize) {
+		/*
+		 * The @PathVariable annotation is used for data passed in the URI (e.g. RESTful
+		 * web services) while @RequestParam is used to extract the data found in query
+		 * parameters.
+		 */
 		// return postService.getAllPost();
-		return new ResponseEntity<List<PostRequestDto>>(postService.getAllPost(), HttpStatus.OK);
+		return new ResponseEntity<PostResponseDto>(postService.getAllPost(pageNo, pageSize), HttpStatus.OK);
 	}
 
 	@GetMapping("/{postId}")
@@ -77,16 +85,16 @@ public class PostController {
 	}
 
 	@PutMapping("/{postId}")
-	public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostRequestDto postRequestDto,
+	public ResponseEntity<PostRequestDto> updatePost(@RequestBody PostRequestDto postRequestDto,
 			@PathVariable(name = "postId") Long postId) {
 		/*
 		 * @RequestBody annotation maps the HttpRequest body to a transfer or domain
 		 * object, enabling automatic deserialization of the inbound HttpRequest body
 		 * onto a Java object.
 		 */
-		PostResponseDto postResponseDto = postService.updatePost(postRequestDto, postId);
+		PostRequestDto postResponseDto = postService.updatePost(postRequestDto, postId);
 
-		return new ResponseEntity<PostResponseDto>(postResponseDto, HttpStatus.OK);
+		return new ResponseEntity<PostRequestDto>(postResponseDto, HttpStatus.OK);
 
 	}
 

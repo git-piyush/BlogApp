@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.blog.DTO.PostRequestDto;
@@ -42,16 +45,29 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostRequestDto> getAllPost() {
+	public PostResponseDto getAllPost(int pageNo, int pageSize) {
 
-		List<Post> allPosts = postRepository.findAll();
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		
+		Page<Post> allPostsInPageableForm = postRepository.findAll(pageable);
 		/*
 		 * Java 8 Stream's map method is intermediate operation and consumes single
 		 * element from input Stream and produces single element to output Stream. It
 		 * simply used to convert Stream of one type to another.
 		 */
-		return allPosts.stream().map(post -> convertEntityToPostRequestDto(post)).collect(Collectors.toList());
-
+		List<Post> allPosts = allPostsInPageableForm.getContent();
+		List<PostRequestDto> content =  allPosts.stream().map(post -> convertEntityToPostRequestDto(post)).collect(Collectors.toList());
+		
+		PostResponseDto postResponseDto = new PostResponseDto();
+		
+		postResponseDto.setPostList(content);
+		postResponseDto.setPageNo(allPostsInPageableForm.getNumber());
+		postResponseDto.setPageSize(allPostsInPageableForm.getSize());
+		postResponseDto.setTotalPages(allPostsInPageableForm.getTotalPages());
+		postResponseDto.setTotalElements(allPostsInPageableForm.getTotalElements());
+		postResponseDto.setLast(allPostsInPageableForm.isLast());
+		
+		return postResponseDto;
 	}
 
 	private Post convertDtoToEntity(PostRequestDto postRequestDto) {
@@ -72,15 +88,6 @@ public class PostServiceImpl implements PostService {
 		return post;
 	}
 
-	private PostResponseDto convertEntityToPostResponseDto(Post newlyCreatedPost) {
-		PostResponseDto post = new PostResponseDto();
-		post.setId(newlyCreatedPost.getId());
-		post.setTitle(newlyCreatedPost.getTitle());
-		post.setDescription(newlyCreatedPost.getDescription());
-		post.setContent(newlyCreatedPost.getContent());
-		return post;
-	}
-
 	@Override
 	public PostRequestDto getPostByPostId(Long postId) {
 		Post post = postRepository.findById(postId)
@@ -89,7 +96,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostResponseDto updatePost(PostRequestDto postRequestDto, Long postId) {
+	public PostRequestDto updatePost(PostRequestDto postRequestDto, Long postId) {
 
 		Post post = postRepository.findById(postId)
 				.orElseThrow(() -> new ResourceNotFoundException("Post", "Id", postId));
@@ -99,7 +106,7 @@ public class PostServiceImpl implements PostService {
 		post.setContent(postRequestDto.getContent());
 		
 		Post updatedPost = postRepository.save(post);
-		return convertEntityToPostResponseDto(updatedPost);
+		return convertEntityToPostRequestDto(updatedPost);
 	}
 
 	@Override

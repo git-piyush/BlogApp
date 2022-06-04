@@ -30,7 +30,7 @@ public class Post {
 	@Column(name="postId")			//@Column is used to customize the name of the column in database
 	private Long id;
 	
-	@Column(name="postTitle", nullable = false)	
+	@Column(name="postTitle", nullable = true)	
 	private String title;
 	
 	@Column(name="postDescription")
